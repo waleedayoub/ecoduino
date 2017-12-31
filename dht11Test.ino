@@ -13,7 +13,7 @@
 
 dht DHT;
 
-#define DHT11_PIN 9
+#define DHT11_PIN 9   // set the humidity pin
 
 void setup()
 {
@@ -64,3 +64,4 @@ void loop()
 //
 // END OF FILE
 //
+
