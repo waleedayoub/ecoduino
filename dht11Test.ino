@@ -8,7 +8,7 @@
 //
 // Released to the public domain
 //
-
+/*
 #include <dht.h>
 
 dht DHT;
@@ -64,4 +64,4 @@ void loop()
 //
 // END OF FILE
 //
-
+*/

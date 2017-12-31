@@ -1,36 +1,40 @@
-//
-//    FILE: dht11_test.ino
-//  AUTHOR: Rob Tillaart
-// VERSION: 0.1.01
-// PURPOSE: DHT library test sketch for DHT11 && Arduino
-//     URL:
-//
-// Released to the public domain
-//
-
 #include <dht.h>
 
 dht DHT;
 
-#define DHT11_PIN 9   // set the humidity pin
+#define MOISTURE_PIN    A2  // set the soil moisture pin
+#define DHT11_PIN       9   // set the humidity pin
+
+int airHumidity;          //environment humidity
+int airTemperature;       //environment temperature
+int soilMoisture;         //soil moisture
+
+int thresholdMoisture = 25;
 
 void setup()
 {
+  // Instantiate all the DHT sensor information
   Serial.begin(115200);
-  Serial.println("DHT TEST PROGRAM ");
+  Serial.println("Reading Sensors: ");
   Serial.print("LIBRARY VERSION: ");
   Serial.println(DHT_LIB_VERSION);
   Serial.println();
-  Serial.println("Type,\tstatus,\tHumidity (%),\tTemperature (C)");
+  Serial.println("Type,\tstatus,\tHumidity (%),\tTemperature (C), \tSoil Moisture ()");
+
+  // Instantiate the pump settings
+  pinMode(5, OUTPUT);
+  pinMode(6, OUTPUT);
+
+  digitalWrite(5, LOW);
+  digitalWrite(6, LOW);
 }
 
 void loop()
 {
-  // READ DATA
+  // Read data from the DHT pin
   Serial.print("DHT11, \t");
   int chk = DHT.read11(DHT11_PIN);
-  switch (chk)
-  {
+  switch (chk) {
     case DHTLIB_OK:
       Serial.print("OK,\t");
       break;
@@ -53,14 +57,40 @@ void loop()
       Serial.print("Unknown error,\t");
       break;
   }
-  // DISPLAY DATA
-  Serial.print(DHT.humidity, 1);
-  Serial.print(",\t");
-  Serial.println(DHT.temperature, 1);
 
-  delay(2000);
+  // Assign all the sensor data to variables
+  airHumidity = DHT.humidity;
+  airTemperature = DHT.temperature;
+  soilMoisture = map(analogRead(MOISTURE_PIN), 0, 1023, 0, 100);
+  
+  // Write all the sensor data to serial
+  Serial.print("airHumidity: ");
+  Serial.print(airHumidity, 1);
+  Serial.print(" ,\t");
+  Serial.print("airTemperature: ");
+  Serial.print(airTemperature, 1);
+  Serial.print(" ,\t");
+  Serial.print("soilMoisture: ");
+  Serial.print(soilMoisture, 1);
+  Serial.print(" ,\t");
+  Serial.println();
+  
+  delay(1000);
+
+  // Cycle the pump on and off routine
+  if (soilMoisture < thresholdMoisture) {
+    pumpOn();
+    delay(5000);
+    pumpOff();
+  } else {
+    pumpOff();
+  }
+  
+  Serial.print("Pump value is set to: ");
+  Serial.print(" ,\t");
+  Serial.print(digitalRead(5), 1);
+  Serial.print(digitalRead(6), 1);
+  Serial.println();
+  delay(1000);
+  
 }
-//
-// END OF FILE
-//
-

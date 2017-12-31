@@ -1,4 +1,6 @@
-#include <dht.h>
+
+/*
+ * #include <dht.h>
 
 dht DHT;
 
@@ -46,4 +48,4 @@ void loop() {
   Serial.print(" ,\t");
   }
 }
-
+*/
