@@ -34,7 +34,7 @@ void loop()
   // Read data from the DHT pin
   Serial.print("DHT11, \t");
   int chk = DHT.read11(DHT11_PIN);
-  switch (chk) {
+  switch (chk) {    // Read and display the DHT pin diagnostics
     case DHTLIB_OK:
       Serial.print("OK,\t");
       break;
@@ -61,7 +61,7 @@ void loop()
   // Assign all the sensor data to variables
   airHumidity = DHT.humidity;
   airTemperature = DHT.temperature;
-  soilMoisture = map(analogRead(MOISTURE_PIN), 0, 1023, 0, 100);
+  soilMoisture = map(analogRead(MOISTURE_PIN), 0, 1023, 0, 100);  // map the analog moisture output to a 0-100 range
   
   // Write all the sensor data to serial
   Serial.print("airHumidity: ");
