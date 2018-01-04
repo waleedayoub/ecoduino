@@ -1,96 +1,48 @@
-#include <dht.h>
+#define BLYNK_PRINT Serial1
 
-dht DHT;
+#include <Adafruit_Sensor.h>
+#include <DHT.h>
+#include <DHT_U.h>
+#include <BlynkSimpleStream.h>
+
+// Auth token from the Blynk app
+char auth[] = "4007f543dc2849aca91e94cd4b98c774";
 
 #define MOISTURE_PIN    A2  // set the soil moisture pin
-#define DHT11_PIN       9   // set the humidity pin
+#define DHTPIN       9   // set the humidity pin
 
-int airHumidity;          //environment humidity
-int airTemperature;       //environment temperature
+// Uncomment the type of sensor in use:
+#define DHTTYPE           DHT11     // DHT 11 
+//#define DHTTYPE           DHT22     // DHT 22 (AM2302)
+//#define DHTTYPE           DHT21     // DHT 21 (AM2301)
+
+DHT_Unified dht(DHTPIN, DHTTYPE);
+BlynkTimer timer;
+
+float airHumidity;          //environment humidity
+float airTemperature;       //environment temperature
 int soilMoisture;         //soil moisture
 
 int thresholdMoisture = 25;
 
 void setup()
 {
-  // Instantiate all the DHT sensor information
-  Serial.begin(115200);
-  Serial.println("Reading Sensors: ");
-  Serial.print("LIBRARY VERSION: ");
-  Serial.println(DHT_LIB_VERSION);
-  Serial.println();
-  Serial.println("Type,\tstatus,\tHumidity (%),\tTemperature (C), \tSoil Moisture ()");
+  // Blynk will work through Serial
+  // Do not read or write this serial manually in the sketch
+  Serial.begin(9600);
+  Blynk.begin(Serial, auth);
 
-  // Instantiate the pump settings
-  pinMode(5, OUTPUT);
-  pinMode(6, OUTPUT);
+  dht.begin();
 
-  digitalWrite(5, LOW);
-  digitalWrite(6, LOW);
+  // Set up a function to be called every second
+  timer.setInterval(1000L, sendSensor);
+
+  // Debug console, write temperature and sensor information here
+  Serial1.begin(9600);
 }
 
 void loop()
 {
-  // Read data from the DHT pin
-  Serial.print("DHT11, \t");
-  int chk = DHT.read11(DHT11_PIN);
-  switch (chk) {    // Read and display the DHT pin diagnostics
-    case DHTLIB_OK:
-      Serial.print("OK,\t");
-      break;
-    case DHTLIB_ERROR_CHECKSUM:
-      Serial.print("Checksum error,\t");
-      break;
-    case DHTLIB_ERROR_TIMEOUT:
-      Serial.print("Time out error,\t");
-      break;
-    case DHTLIB_ERROR_CONNECT:
-      Serial.print("Connect error,\t");
-      break;
-    case DHTLIB_ERROR_ACK_L:
-      Serial.print("Ack Low error,\t");
-      break;
-    case DHTLIB_ERROR_ACK_H:
-      Serial.print("Ack High error,\t");
-      break;
-    default:
-      Serial.print("Unknown error,\t");
-      break;
-  }
-
-  // Assign all the sensor data to variables
-  airHumidity = DHT.humidity;
-  airTemperature = DHT.temperature;
-  soilMoisture = map(analogRead(MOISTURE_PIN), 0, 1023, 0, 100);  // map the analog moisture output to a 0-100 range
-  
-  // Write all the sensor data to serial
-  Serial.print("airHumidity: ");
-  Serial.print(airHumidity, 1);
-  Serial.print(" ,\t");
-  Serial.print("airTemperature: ");
-  Serial.print(airTemperature, 1);
-  Serial.print(" ,\t");
-  Serial.print("soilMoisture: ");
-  Serial.print(soilMoisture, 1);
-  Serial.print(" ,\t");
-  Serial.println();
-  
-  delay(1000);
-
-  // Cycle the pump on and off routine
-  if (soilMoisture < thresholdMoisture) {
-    pumpOn();
-    delay(5000);
-    pumpOff();
-  } else {
-    pumpOff();
-  }
-  
-  Serial.print("Pump value is set to: ");
-  Serial.print(" ,\t");
-  Serial.print(digitalRead(5), 1);
-  Serial.print(digitalRead(6), 1);
-  Serial.println();
-  delay(1000);
-  
+  Blynk.run();
+  timer.run(); 
 }
