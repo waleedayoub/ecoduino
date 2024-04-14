@@ -37,7 +37,7 @@ TODO:
     - A standard 5v power supply won't cut it, you'll need at least 9V (I ended up using a 12v power supply I had lying around)
 4. The system will automatically start monitoring the soil moisture level and watering the plants when necessary.
 
-### Acknowledgements
+### Schematic
 
 ```mermaid
 graph TD
