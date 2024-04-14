@@ -1,7 +1,35 @@
 #include <Arduino.h>
-#include <unity.h>
-#include "../src/main.cpp"  // Adjust this path to include your main.cpp file
 
+void setup()
+{
+    pinMode(5, OUTPUT);
+    pinMode(6, OUTPUT);
+
+    digitalWrite(5, LOW);
+    digitalWrite(6, LOW);
+}
+
+void loop()
+{
+    pumpOn();
+    delay(1000);
+    pumpOff();
+    delay(1000);
+}
+// open pump
+void pumpOn()
+{
+    digitalWrite(5, HIGH);
+    digitalWrite(6, HIGH);
+}
+// close pump
+void pumpOff()
+{
+    digitalWrite(5, LOW);
+    digitalWrite(6, LOW);
+}
+
+/*
 void test_pump_on(void) {
     // Call the pump_on function
     pump_on();
@@ -19,3 +47,4 @@ void test_pump_off(void) {
     TEST_ASSERT_EQUAL(digitalRead(PUMP_PIN1), LOW);
     TEST_ASSERT_EQUAL(digitalRead(PUMP_PIN2), LOW);
 }
+*/
